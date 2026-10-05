@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Beberapa kelas kecil yang dipakai berulang-ulang di banyak halaman
+ * Blade. Ditaruh di sini (bukan diulang-ulang lewat @apply panjang di
+ * tiap file) supaya kalau suatu saat warna kartu atau badge ingin
+ * diubah, cukup diubah di satu tempat ini saja.
+ */
+@layer components {
+    .kartu {
+        @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+    }
+
+    .badge {
+        @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+    }
+}
