@@ -90,9 +90,21 @@
                                 <li class="flex items-center gap-3">
                                     <img src="{{ $item['produk']->gambar_url }}" class="h-10 w-10 rounded-md object-cover" alt="">
                                     <div class="min-w-0 flex-1">
-                                        <p class="truncate text-sm font-medium text-slate-900">{{ $item['produk']->nama }}</p>
-                                        <p class="text-xs text-slate-500">{{ $item['produk']->harga_format }} &times; {{ $item['jumlah'] }}</p>
+                                        <p class="text-sm font-medium leading-tight text-slate-900">{{ $item['produk']->nama }}</p>
+                                        <p class="text-xs text-slate-500">{{ $item['produk']->harga_format }}</p>
                                     </div>
+                                    {{-- Tombol - / + mengirim jumlah baru lewat atribut value; jumlah 0 berarti item dihapus. --}}
+                                    <form method="POST" action="{{ route('keranjang.ubah', $item['produk']) }}" class="flex items-center gap-1">
+                                        @csrf @method('PATCH')
+                                        <button type="submit" name="jumlah" value="{{ $item['jumlah'] - 1 }}" class="rounded border border-slate-300 p-0.5 text-slate-600 hover:bg-slate-50" title="Kurangi">
+                                            <x-icon.minus class="h-3.5 w-3.5" />
+                                        </button>
+                                        <span class="w-6 text-center text-sm font-medium text-slate-900">{{ $item['jumlah'] }}</span>
+                                        <button type="submit" name="jumlah" value="{{ $item['jumlah'] + 1 }}" @disabled($item['jumlah'] >= $item['produk']->stok)
+                                            class="rounded border border-slate-300 p-0.5 text-slate-600 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40" title="Tambah">
+                                            <x-icon.plus class="h-3.5 w-3.5" />
+                                        </button>
+                                    </form>
                                     <form method="POST" action="{{ route('keranjang.hapus', $item['produk']) }}">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="text-slate-400 hover:text-rose-600" title="Hapus">

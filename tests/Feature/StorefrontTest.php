@@ -54,6 +54,21 @@ class StorefrontTest extends TestCase
         $response->assertSessionHas('sukses');
     }
 
+    public function test_jumlah_item_di_keranjang_bisa_diubah_dalam_batas_stok(): void
+    {
+        $produk = Produk::factory()->create(['stok' => 3]);
+        $this->post(route('keranjang.tambah', $produk));
+
+        $this->patch(route('keranjang.ubah', $produk), ['jumlah' => 3]);
+        $this->assertSame([$produk->id => 3], session('keranjang'));
+
+        $this->patch(route('keranjang.ubah', $produk), ['jumlah' => 4])->assertSessionHasErrors('jumlah');
+        $this->assertSame([$produk->id => 3], session('keranjang'), 'Jumlah melebihi stok harus ditolak.');
+
+        $this->patch(route('keranjang.ubah', $produk), ['jumlah' => 0]);
+        $this->assertSame([], session('keranjang'), 'Jumlah 0 berarti item dihapus.');
+    }
+
     public function test_pencarian_barcode_yang_tidak_ada_menampilkan_pesan_galat(): void
     {
         $response = $this->post(route('keranjang.scan'), ['barcode' => 'tidak-ada-begini']);
