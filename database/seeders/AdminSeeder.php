@@ -19,16 +19,17 @@ class AdminSeeder extends Seeder
      * otomatis meng-hash-nya pakai bcrypt lewat cast 'hashed' bawaan
      * Laravel, jadi tidak ada risiko lupa meng-hash secara manual.
      *
-     * PENTING: ganti password ini lewat menu "Ubah Password" begitu
-     * aplikasi benar-benar dipakai di luar lingkungan uji coba/skripsi.
+     * Email dan password admin bisa diatur lewat ADMIN_EMAIL dan
+     * ADMIN_PASSWORD di .env; kalau tidak diisi, dipakai nilai default
+     * di bawah ('admin123') yang hanya cocok untuk uji coba lokal.
      */
     public function run(): void
     {
         User::firstOrCreate(
-            ['email' => 'admin@ballechery.test'],
+            ['email' => env('ADMIN_EMAIL', 'admin@ballechery.test')],
             [
                 'name' => 'Admin Balle Chery',
-                'password' => 'admin123',
+                'password' => env('ADMIN_PASSWORD', 'admin123'),
             ]
         );
     }
