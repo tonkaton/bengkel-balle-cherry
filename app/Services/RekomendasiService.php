@@ -82,7 +82,9 @@ class RekomendasiService
             return collect();
         }
 
-        $gabungan = collect();
+        // Array biasa, bukan Collection: elemen Collection tidak bisa diubah
+        // langsung lewat $gabungan[$kunci]['skor'] += ... (PHP menolaknya).
+        $gabungan = [];
 
         foreach ($produkIdDiKeranjang as $produkId) {
             foreach ($this->rekomendasikanUntukProduk($produkId, $limit) as $item) {
@@ -91,7 +93,7 @@ class RekomendasiService
                 }
 
                 $kunci = $item['produk']->id;
-                if ($gabungan->has($kunci)) {
+                if (isset($gabungan[$kunci])) {
                     // Kalau produk yang sama muncul sebagai rekomendasi dari
                     // lebih dari satu produk di keranjang, skornya
                     // dijumlahkan - masuk akal karena berarti produk itu
@@ -103,7 +105,7 @@ class RekomendasiService
             }
         }
 
-        return $gabungan->sortByDesc('skor')->take($limit)->values();
+        return collect($gabungan)->sortByDesc('skor')->take($limit)->values();
     }
 
     /**

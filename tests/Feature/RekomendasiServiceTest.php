@@ -66,6 +66,28 @@ class RekomendasiServiceTest extends TestCase
         $this->assertGreaterThan($skorBusi['skor'], $skorOli['skor']);
     }
 
+    public function test_rekomendasi_keranjang_menjumlahkan_skor_produk_yang_muncul_dari_dua_item(): void
+    {
+        $kampas = Produk::factory()->create(['nama' => 'Kampas Rem']);
+        $busi = Produk::factory()->create(['nama' => 'Busi']);
+        $oli = Produk::factory()->create(['nama' => 'Oli Mesin']);
+
+        // Oli dibeli bersama Kampas dan bersama Busi, jadi Oli direkomendasikan
+        // dari kedua item keranjang - dulu kasus ini membuat halaman toko error.
+        foreach ([$kampas, $busi] as $asal) {
+            $transaksi = Transaksi::factory()->create();
+            DetailTransaksi::factory()->create(['transaksi_id' => $transaksi->id, 'produk_id' => $asal->id]);
+            DetailTransaksi::factory()->create(['transaksi_id' => $transaksi->id, 'produk_id' => $oli->id]);
+        }
+
+        $hasil = app(RekomendasiService::class)->rekomendasikanUntukKeranjang([$kampas->id, $busi->id]);
+
+        $this->assertCount(1, $hasil);
+        $this->assertSame($oli->id, $hasil[0]['produk']->id);
+        // 100% dari Kampas + 100% dari Busi.
+        $this->assertEqualsWithDelta(200.0, $hasil[0]['skor'], 0.01);
+    }
+
     public function test_transaksi_tanpa_produk_yang_sama_tidak_dianggap_tetangga(): void
     {
         // Regresi: dulu dua transaksi tanpa irisan produk menghasilkan jarak 0
