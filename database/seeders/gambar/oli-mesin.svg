@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <rect width="400" height="400" fill="#f1f5f9"/><circle cx="200" cy="205" r="160" fill="#e2e8f0"/>
+  <rect x="152" y="104" width="38" height="32" fill="#d97706"/>
+  <rect x="146" y="80" width="50" height="30" rx="5" fill="#1e293b"/>
+  <path d="M120 160 Q120 130 150 130 L292 130 Q312 130 312 150 L312 332 Q312 350 294 350 L138 350 Q120 350 120 332 Z" fill="#f59e0b" stroke="#b45309" stroke-width="4"/>
+  <rect x="236" y="148" width="54" height="26" rx="13" fill="#e2e8f0" stroke="#b45309" stroke-width="4"/>
+  <rect x="140" y="196" width="152" height="122" rx="10" fill="#1e293b"/>
+  <text x="216" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="30" font-weight="bold" fill="#ffffff">OLI</text>
+  <text x="216" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ffffff">MESIN</text>
+  <text x="216" y="302" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#fbbf24">1 L</text>
+  <path d="M352 220 C352 220 330 250 330 266 A22 22 0 0 0 374 266 C374 250 352 220 352 220 Z" fill="#b45309"/>
+</svg>

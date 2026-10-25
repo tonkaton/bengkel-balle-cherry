@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <rect width="400" height="400" fill="#f1f5f9"/><circle cx="200" cy="205" r="160" fill="#e2e8f0"/>
+  <rect x="186" y="40" width="28" height="36" rx="5" fill="#94a3b8" stroke="#475569" stroke-width="3"/>
+  <rect x="168" y="72" width="64" height="132" rx="20" fill="#f8fafc" stroke="#94a3b8" stroke-width="4"/>
+  <g stroke="#cbd5e1" stroke-width="4"><path d="M172 98 H228"/><path d="M172 118 H228"/><path d="M172 138 H228"/></g>
+  <text x="200" y="182" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#2563eb">Ir</text>
+  <rect x="146" y="200" width="108" height="52" rx="6" fill="#64748b" stroke="#334155" stroke-width="3"/>
+  <g stroke="#334155" stroke-width="3"><path d="M182 200 V252"/><path d="M218 200 V252"/></g>
+  <rect x="156" y="252" width="88" height="10" fill="#94a3b8"/>
+  <rect x="170" y="262" width="60" height="72" fill="#cbd5e1" stroke="#64748b" stroke-width="3"/>
+  <g stroke="#64748b" stroke-width="3"><path d="M170 272 L230 280"/><path d="M170 284 L230 292"/><path d="M170 296 L230 304"/><path d="M170 308 L230 316"/><path d="M170 320 L230 328"/></g>
+  <rect x="196" y="334" width="8" height="14" fill="#475569"/>
+  <path d="M222 334 V356 H200" fill="none" stroke="#475569" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M246 344 l14 -10 l-4 12 l16 -8" fill="none" stroke="#f59e0b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
