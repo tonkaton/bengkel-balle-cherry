@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <rect width="400" height="400" fill="#f1f5f9"/><circle cx="200" cy="190" r="150" fill="#e2e8f0"/>
+  <g transform="translate(170 170)" fill="#475569">
+    <rect x="-15" y="-98" width="30" height="34" rx="5" transform="rotate(0)"/><rect x="-15" y="-98" width="30" height="34" rx="5" transform="rotate(45)"/><rect x="-15" y="-98" width="30" height="34" rx="5" transform="rotate(90)"/><rect x="-15" y="-98" width="30" height="34" rx="5" transform="rotate(135)"/><rect x="-15" y="-98" width="30" height="34" rx="5" transform="rotate(180)"/><rect x="-15" y="-98" width="30" height="34" rx="5" transform="rotate(225)"/><rect x="-15" y="-98" width="30" height="34" rx="5" transform="rotate(270)"/><rect x="-15" y="-98" width="30" height="34" rx="5" transform="rotate(315)"/>
+    <circle r="74"/>
+    <circle r="30" fill="#e2e8f0"/>
+  </g>
+  <g transform="translate(70 60) scale(0.7)"><g transform="rotate(-45 200 185)"><rect x="186" y="95" width="28" height="170" rx="14" fill="#64748b" stroke="#334155" stroke-width="4"/><circle cx="200" cy="92" r="40" fill="#64748b" stroke="#334155" stroke-width="4"/><rect x="186" y="44" width="28" height="48" fill="#e2e8f0"/><circle cx="200" cy="272" r="30" fill="#64748b" stroke="#334155" stroke-width="4"/><circle cx="200" cy="272" r="13" fill="#e2e8f0" stroke="#334155" stroke-width="3"/></g></g>
+  <rect x="100" y="330" width="200" height="44" rx="22" fill="#dc2626"/>
+  <text x="200" y="359" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ffffff">SERVIS BESAR</text>
+</svg>

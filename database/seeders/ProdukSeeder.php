@@ -12,7 +12,8 @@ class ProdukSeeder extends Seeder
     /**
      * Lima produk contoh yang sama seperti versi PHP lama (database.sql),
      * dipertahankan supaya data uji coba di laporan skripsi/audit tetap
-     * relevan untuk dibandingkan dengan aplikasi Laravel ini.
+     * relevan untuk dibandingkan dengan aplikasi Laravel ini, ditambah dua
+     * paket jasa servis.
      */
     public function run(): void
     {
@@ -24,6 +25,13 @@ class ProdukSeeder extends Seeder
             ['barcode' => '8991234567892', 'nama' => 'Busi Iridium', 'harga' => 120000, 'stok' => 15, 'kategori' => 'Kelistrikan', 'gambar' => 'busi-iridium.svg'],
             ['barcode' => '8991234567893', 'nama' => 'Filter Udara', 'harga' => 45000, 'stok' => 8, 'kategori' => 'Mesin', 'gambar' => 'filter-udara.svg'],
             ['barcode' => '8991234567894', 'nama' => 'Aki Kering', 'harga' => 350000, 'stok' => 5, 'kategori' => 'Kelistrikan', 'gambar' => 'aki-kering.svg'],
+            // Jasa servis dicatat sebagai produk berkategori "Jasa Servis" supaya bisa
+            // masuk keranjang, checkout, dan rekomendasi seperti sparepart. Jasa tidak
+            // punya stok fisik, jadi stoknya diisi angka besar (999) sebagai kuota.
+            // Harga = jasa saja, belum termasuk part (riset harga pasaran bengkel umum:
+            // servis ringan Rp 50-150 ribu, servis besar matic Rp 210-400 ribu).
+            ['barcode' => 'SRV-RINGAN', 'nama' => 'Servis Ringan', 'harga' => 100000, 'stok' => 999, 'kategori' => 'Jasa Servis', 'gambar' => 'servis-ringan.svg'],
+            ['barcode' => 'SRV-BESAR', 'nama' => 'Servis Besar', 'harga' => 250000, 'stok' => 999, 'kategori' => 'Jasa Servis', 'gambar' => 'servis-besar.svg'],
         ];
 
         foreach ($produk as $item) {
