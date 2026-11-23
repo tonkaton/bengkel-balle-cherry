@@ -11,7 +11,7 @@
         <table class="min-w-full divide-y divide-slate-200 text-sm">
             <thead class="bg-slate-50">
                 <tr class="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                    <th class="px-4 py-3">Produk Asal</th>
+                    <th class="px-4 py-3">Item Asal</th>
                     <th class="px-4 py-3">Direkomendasikan</th>
                     <th class="px-4 py-3">Skor</th>
                     <th class="px-4 py-3">Metode</th>
@@ -21,8 +21,14 @@
             <tbody class="divide-y divide-slate-100">
                 @forelse ($log as $item)
                     <tr>
-                        <td class="px-4 py-3 text-slate-700">{{ $item->produkAsal->nama ?? '-' }}</td>
-                        <td class="px-4 py-3 font-medium text-slate-900">{{ $item->produkRekomendasi->nama ?? '-' }}</td>
+                        <td class="px-4 py-3 text-slate-700">
+                            {{ $item->asal->nama ?? '-' }}
+                            @if ($item->asal_type === 'servis') <span class="badge ml-1 bg-amber-50 text-amber-700">Servis</span> @endif
+                        </td>
+                        <td class="px-4 py-3 font-medium text-slate-900">
+                            {{ $item->rekomendasi->nama ?? '-' }}
+                            @if ($item->rekomendasi_type === 'servis') <span class="badge ml-1 bg-amber-50 text-amber-700">Servis</span> @endif
+                        </td>
                         <td class="px-4 py-3 text-slate-600">{{ $item->skor }}%</td>
                         <td class="px-4 py-3">
                             <span class="badge {{ $item->metode === 'knn' ? 'bg-brand-50 text-brand-700' : 'bg-slate-100 text-slate-600' }}">

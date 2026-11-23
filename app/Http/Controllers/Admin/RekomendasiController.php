@@ -25,7 +25,7 @@ class RekomendasiController extends Controller
     /** Riwayat rekomendasi terbaru, lengkap dengan metode (knn / co_purchase) yang menghasilkannya. */
     public function index(): View
     {
-        $log = LogRekomendasi::with(['produkAsal', 'produkRekomendasi'])
+        $log = LogRekomendasi::with(['asal', 'rekomendasi'])
             ->latest('tanggal')
             ->paginate(20);
 

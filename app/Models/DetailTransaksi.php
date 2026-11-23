@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Model DetailTransaksi - satu baris = satu produk di dalam satu transaksi
+ * Model DetailTransaksi - satu baris = satu item di dalam satu transaksi
  * (kalau checkout beli 3 produk berbeda, berarti ada 3 baris di sini).
+ * Item bisa berupa sparepart (produk_id) atau jasa servis (servis_id) dari
+ * booking yang sudah selesai; salah satunya selalu kosong.
  */
 class DetailTransaksi extends Model
 {
@@ -19,6 +21,7 @@ class DetailTransaksi extends Model
     protected $fillable = [
         'transaksi_id',
         'produk_id',
+        'servis_id',
         'jumlah',
         'harga_saat_beli',
     ];
@@ -38,6 +41,19 @@ class DetailTransaksi extends Model
     public function produk(): BelongsTo
     {
         return $this->belongsTo(Produk::class);
+    }
+
+    public function servis(): BelongsTo
+    {
+        return $this->belongsTo(Servis::class);
+    }
+
+    /** Nama item untuk struk dan laporan, baik sparepart maupun servis. */
+    public function getNamaItemAttribute(): string
+    {
+        return $this->servis_id
+            ? ($this->servis->nama ?? 'Servis telah dihapus')
+            : ($this->produk->nama ?? 'Produk telah dihapus');
     }
 
     /**

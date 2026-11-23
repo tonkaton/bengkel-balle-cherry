@@ -1,20 +1,21 @@
 @props(['produk'])
 
 <div class="group kartu flex flex-col overflow-hidden transition hover:shadow-md">
-    <div class="aspect-square w-full overflow-hidden bg-slate-100">
-        <img src="{{ $produk->gambar_url }}" alt="{{ $produk->nama }}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105" loading="lazy">
+    {{-- object-contain: foto produk (kemasan, label) tidak terpotong --}}
+    <div class="aspect-square w-full overflow-hidden bg-white">
+        <img src="{{ $produk->gambar_url }}" alt="{{ $produk->nama }}" class="h-full w-full object-contain p-2 transition duration-300 group-hover:scale-105" loading="lazy">
     </div>
 
-    <div class="flex flex-1 flex-col gap-1 p-4">
+    <div class="flex flex-1 flex-col gap-1 border-t border-slate-100 p-3 sm:p-4">
         @if ($produk->kategori)
             <span class="badge w-fit bg-brand-50 text-brand-700">{{ $produk->kategori->nama }}</span>
         @endif
 
-        <h3 class="font-medium text-slate-900" title="{{ $produk->nama }}">{{ $produk->nama }}</h3>
-        <p class="text-lg font-semibold text-slate-900">{{ $produk->harga_format }}</p>
-        <p class="text-xs text-slate-500">Stok: {{ $produk->stok }}</p>
+        <h3 class="line-clamp-2 text-sm font-medium text-slate-900 sm:text-base" title="{{ $produk->nama }}">{{ $produk->nama }}</h3>
+        <p class="text-base font-semibold text-slate-900 sm:text-lg">{{ $produk->harga_format }}</p>
+        <p class="text-xs {{ $produk->stok_habis ? 'text-rose-600' : 'text-slate-500' }}">{{ $produk->stok_habis ? 'Stok habis' : 'Stok: '.$produk->stok }}</p>
 
-        <form method="POST" action="{{ route('keranjang.tambah', $produk) }}" class="mt-auto pt-3">
+        <form method="POST" action="{{ route('keranjang.tambah', $produk) }}" class="mt-auto pt-2">
             @csrf
             <button type="submit"
                 @disabled($produk->stok_habis)

@@ -18,7 +18,7 @@
                     <p class="mt-2 text-xs text-slate-500">
                         Produk dibeli:
                         <span class="text-emerald-600">
-                            {{ $item->transaksi->detailTransaksi->map(fn ($d) => ($d->produk->nama ?? '?').' ('.$d->jumlah.'x)')->implode(', ') }}
+                            {{ $item->transaksi->detailTransaksi->map(fn ($d) => $d->nama_item.' ('.$d->jumlah.'x)')->implode(', ') }}
                         </span>
                     </p>
                 @endif

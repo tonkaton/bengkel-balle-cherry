@@ -16,7 +16,7 @@ class RatingController extends Controller
     /** Daftar rating & komentar terbaru, lengkap dengan produk yang dibeli pada transaksi terkait. */
     public function index(): View
     {
-        $rating = RatingKomen::with('transaksi.detailTransaksi.produk')
+        $rating = RatingKomen::with(['transaksi.detailTransaksi.produk', 'transaksi.detailTransaksi.servis'])
             ->latest('tanggal')
             ->paginate(15);
 

@@ -10,7 +10,7 @@
             <div class="space-y-2 p-6">
                 @foreach ($transaksi->detailTransaksi as $item)
                     <div class="flex justify-between text-sm">
-                        <span class="text-slate-700">{{ $item->produk->nama ?? 'Produk telah dihapus' }} &times;{{ $item->jumlah }}</span>
+                        <span class="text-slate-700">{{ $item->nama_item }} &times;{{ $item->jumlah }}</span>
                         <span class="font-medium text-slate-900">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</span>
                     </div>
                 @endforeach

@@ -60,6 +60,7 @@ class HomeController extends Controller
 
         return view('storefront.index', [
             'produk' => $produk,
+            'unggulan' => $request->filled('kategori') || $request->filled('cari') ? collect() : $this->produkUnggulan(),
             'kategori' => $kategori,
             'kategoriAktif' => $request->integer('kategori') ?: null,
             'kataKunci' => $request->string('cari')->toString(),
@@ -67,5 +68,35 @@ class HomeController extends Controller
             'totalKeranjang' => $this->cart->total(),
             'rekomendasi' => $rekomendasi,
         ]);
+    }
+
+    /**
+     * Produk Unggulan: peringkat penjualan (total unit terjual dari detail
+     * transaksi), dari paling laku ke paling sedikit. Ini BUKAN KNN - KNN
+     * butuh riwayat transaksi berating, jadi produk yang baru ditambahkan
+     * admin belum bisa ikut. Supaya produk baru tetap langsung terlihat
+     * pelanggan, produk yang ditambahkan 14 hari terakhir selalu ikut
+     * ditampilkan walau belum masuk 12 besar (terjual 0 = paling akhir).
+     */
+    private function produkUnggulan(): \Illuminate\Support\Collection
+    {
+        $teratas = Produk::query()
+            ->withSum('detailTransaksi as terjual', 'jumlah')
+            ->orderByDesc('terjual')
+            ->orderByDesc('id')
+            ->limit(12)
+            ->get();
+
+        $baru = Produk::query()
+            ->withSum('detailTransaksi as terjual', 'jumlah')
+            ->where('created_at', '>=', now()->subDays(14))
+            ->whereNotIn('id', $teratas->pluck('id'))
+            ->orderByDesc('terjual')
+            ->orderByDesc('id')
+            ->get();
+
+        return $teratas->concat($baru)
+            ->each(fn (Produk $p) => $p->terjual = (int) $p->terjual)
+            ->values();
     }
 }

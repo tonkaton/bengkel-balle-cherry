@@ -48,6 +48,12 @@ class Transaksi extends Model
         return $this->hasOne(RatingKomen::class);
     }
 
+    /** Booking servis yang menghasilkan transaksi ini (kosong untuk belanja biasa lewat keranjang). */
+    public function bookingServis(): HasOne
+    {
+        return $this->hasOne(BookingServis::class);
+    }
+
     /**
      * Otomatis diisi setiap kali transaksi baru dibuat, supaya controller
      * tidak perlu (dan tidak boleh) mengarang sendiri kode transaksi atau

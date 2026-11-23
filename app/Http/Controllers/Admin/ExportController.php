@@ -24,12 +24,13 @@ class ExportController extends Controller
     /** Unduh seluruh riwayat transaksi beserta rating/komentarnya sebagai CSV. */
     public function transaksi(): StreamedResponse
     {
-        return $this->unduhCsv('laporan_transaksi.csv', ['Kode Transaksi', 'Tanggal', 'Total', 'Rating', 'Komentar'], function ($tulisBaris) {
-            Transaksi::with('ratingKomen')->orderByDesc('tanggal')->chunk(200, function ($semua) use ($tulisBaris) {
+        return $this->unduhCsv('laporan_transaksi.csv', ['Kode Transaksi', 'Tanggal', 'Item', 'Total', 'Rating', 'Komentar'], function ($tulisBaris) {
+            Transaksi::with(['ratingKomen', 'detailTransaksi.produk', 'detailTransaksi.servis'])->orderByDesc('tanggal')->chunk(200, function ($semua) use ($tulisBaris) {
                 foreach ($semua as $transaksi) {
                     $tulisBaris([
                         $transaksi->kode_transaksi,
                         $transaksi->tanggal->format('Y-m-d H:i:s'),
+                        $transaksi->detailTransaksi->map(fn ($d) => $d->nama_item.' x'.$d->jumlah)->implode('; '),
                         $transaksi->total_harga,
                         $transaksi->ratingKomen->rating ?? '',
                         $transaksi->ratingKomen->komen ?? '',
@@ -64,15 +65,17 @@ class ExportController extends Controller
     /** Unduh 500 entri log_rekomendasi terbaru (skor + metode) sebagai CSV. */
     public function rekomendasi(): StreamedResponse
     {
-        return $this->unduhCsv('laporan_rekomendasi.csv', ['Produk Asal', 'Produk Rekomendasi', 'Skor (%)', 'Metode', 'Tanggal'], function ($tulisBaris) {
-            LogRekomendasi::with(['produkAsal', 'produkRekomendasi'])
+        return $this->unduhCsv('laporan_rekomendasi.csv', ['Item Asal', 'Jenis Asal', 'Item Rekomendasi', 'Jenis Rekomendasi', 'Skor (%)', 'Metode', 'Tanggal'], function ($tulisBaris) {
+            LogRekomendasi::with(['asal', 'rekomendasi'])
                 ->latest('tanggal')
                 ->limit(500)
                 ->get()
                 ->each(function ($log) use ($tulisBaris) {
                     $tulisBaris([
-                        $log->produkAsal->nama ?? '-',
-                        $log->produkRekomendasi->nama ?? '-',
+                        $log->asal->nama ?? '-',
+                        $log->asal_type,
+                        $log->rekomendasi->nama ?? '-',
+                        $log->rekomendasi_type,
                         $log->skor,
                         $log->metode,
                         $log->tanggal->format('Y-m-d H:i:s'),

@@ -1,17 +1,21 @@
 <?php
 
 use App\Http\Controllers\Admin\AnalisisStokController;
+use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\ProdukController as AdminProdukController;
 use App\Http\Controllers\Admin\RatingController as AdminRatingController;
 use App\Http\Controllers\Admin\RekomendasiController;
+use App\Http\Controllers\Admin\ServisController as AdminServisController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\ServisController;
 use App\Http\Controllers\StrukController;
 use Illuminate\Support\Facades\Route;
 
@@ -42,6 +46,14 @@ Route::get('/struk/{transaksi:kode_transaksi}', [StrukController::class, 'show']
 Route::get('/rating/{transaksi:rating_token}', [RatingController::class, 'create'])->name('rating.create');
 Route::post('/rating/{transaksi:rating_token}', [RatingController::class, 'store'])->name('rating.store');
 
+// Jasa servis & booking: pelanggan memilih servis, mengisi form booking, lalu
+// mengecek status lewat kode booking acak (bukan ID berurutan). Pengiriman
+// booking dibatasi 10 kali per menit per IP supaya form tidak dipakai spam.
+Route::get('/servis', [ServisController::class, 'index'])->name('servis.index');
+Route::get('/servis/{servis}/booking', [ServisController::class, 'booking'])->name('servis.booking');
+Route::post('/servis/{servis}/booking', [ServisController::class, 'simpanBooking'])->middleware('throttle:10,1')->name('servis.booking.simpan');
+Route::get('/booking/{booking:kode_booking}', [BookingController::class, 'show'])->middleware('throttle:30,1')->name('booking.show');
+
 /*
 |--------------------------------------------------------------------------
 | Rute admin - seluruhnya wajib login (middleware "auth" bawaan Breeze)
@@ -55,6 +67,13 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('produk', AdminProdukController::class)->except(['show']);
+    Route::resource('servis', AdminServisController::class)->except(['show'])->parameters(['servis' => 'servis']);
+
+    Route::get('booking', [AdminBookingController::class, 'index'])->name('booking.index');
+    Route::get('booking/{booking}', [AdminBookingController::class, 'show'])->name('booking.show');
+    Route::patch('booking/{booking}/konfirmasi', [AdminBookingController::class, 'konfirmasi'])->name('booking.konfirmasi');
+    Route::patch('booking/{booking}/batal', [AdminBookingController::class, 'batal'])->name('booking.batal');
+    Route::post('booking/{booking}/selesaikan', [AdminBookingController::class, 'selesaikan'])->name('booking.selesaikan');
 
     Route::get('kategori', [KategoriController::class, 'index'])->name('kategori.index');
     Route::post('kategori', [KategoriController::class, 'store'])->name('kategori.store');

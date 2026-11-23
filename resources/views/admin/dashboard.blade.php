@@ -1,7 +1,8 @@
 <x-admin-layout title="Dashboard">
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
         <x-admin.stat-card label="Total Produk" :value="$totalProduk" icon="box" accent="brand" />
         <x-admin.stat-card label="Total Transaksi" :value="$totalTransaksi" icon="chart" accent="emerald" />
+        <x-admin.stat-card label="Booking Aktif" :value="$bookingAktif" icon="calendar" accent="brand" />
         <x-admin.stat-card label="Total Pendapatan" value="Rp {{ number_format($totalPendapatan, 0, ',', '.') }}" icon="tag" accent="amber" />
         <x-admin.stat-card label="Rata-rata Rating" value="{{ $rataRating ?: '-' }} / 5 ({{ $jumlahRating }} ulasan)" icon="star" accent="rose" />
     </div>

@@ -16,4 +16,12 @@
     .badge {
         @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
     }
+
+    /* Baris yang bisa digeser (chip kategori, Produk Unggulan) tanpa garis scrollbar. */
+    .geser {
+        scrollbar-width: none;
+    }
+    .geser::-webkit-scrollbar {
+        display: none;
+    }
 }

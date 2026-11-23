@@ -36,6 +36,18 @@
                     <x-icon.tag class="h-5 w-5" /> Kategori
                 </x-admin-nav-link>
 
+                <p class="mt-4 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Layanan</p>
+                <x-admin-nav-link :href="route('admin.servis.index')" :active="request()->routeIs('admin.servis.*')">
+                    <x-icon.wrench class="h-5 w-5" /> Jasa Servis
+                </x-admin-nav-link>
+                <x-admin-nav-link :href="route('admin.booking.index')" :active="request()->routeIs('admin.booking.*')">
+                    <x-icon.calendar class="h-5 w-5" /> Booking Servis
+                    @php($bookingMenunggu = \App\Models\BookingServis::where('status', \App\Models\BookingServis::MENUNGGU)->count())
+                    @if ($bookingMenunggu)
+                        <span class="ml-auto rounded-full bg-amber-500 px-2 py-0.5 text-xs font-semibold text-white">{{ $bookingMenunggu }}</span>
+                    @endif
+                </x-admin-nav-link>
+
                 <p class="mt-4 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Wawasan</p>
                 <x-admin-nav-link :href="route('admin.analisis-stok.index')" :active="request()->routeIs('admin.analisis-stok.*')">
                     <x-icon.chart class="h-5 w-5" /> Analisis Popularitas

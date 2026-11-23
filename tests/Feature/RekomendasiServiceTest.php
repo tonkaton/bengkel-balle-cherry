@@ -6,6 +6,7 @@ use App\Models\DetailTransaksi;
 use App\Models\LogRekomendasi;
 use App\Models\Produk;
 use App\Models\RatingKomen;
+use App\Models\Servis;
 use App\Models\Transaksi;
 use App\Services\RekomendasiService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -54,8 +55,8 @@ class RekomendasiServiceTest extends TestCase
 
         $hasil = app(RekomendasiService::class)->rekomendasikanUntukProduk($kampas->id);
 
-        $skorOli = $hasil->firstWhere('produk.id', $oli->id);
-        $skorBusi = $hasil->firstWhere('produk.id', $busi->id);
+        $skorOli = $hasil->firstWhere('item.id', $oli->id);
+        $skorBusi = $hasil->firstWhere('item.id', $busi->id);
 
         $this->assertNotNull($skorOli);
         $this->assertNotNull($skorBusi);
@@ -66,7 +67,7 @@ class RekomendasiServiceTest extends TestCase
         $this->assertGreaterThan($skorBusi['skor'], $skorOli['skor']);
     }
 
-    public function test_rekomendasi_keranjang_menjumlahkan_skor_produk_yang_muncul_dari_dua_item(): void
+    public function test_rekomendasi_keranjang_menggabungkan_skor_produk_yang_muncul_dari_dua_item(): void
     {
         $kampas = Produk::factory()->create(['nama' => 'Kampas Rem']);
         $busi = Produk::factory()->create(['nama' => 'Busi']);
@@ -83,9 +84,10 @@ class RekomendasiServiceTest extends TestCase
         $hasil = app(RekomendasiService::class)->rekomendasikanUntukKeranjang([$kampas->id, $busi->id]);
 
         $this->assertCount(1, $hasil);
-        $this->assertSame($oli->id, $hasil[0]['produk']->id);
-        // 100% dari Kampas + 100% dari Busi.
-        $this->assertEqualsWithDelta(200.0, $hasil[0]['skor'], 0.01);
+        $this->assertSame($oli->id, $hasil[0]['item']->id);
+        // Rata-rata dari 100% (dari Kampas) dan 100% (dari Busi): tetap 100%,
+        // bukan 200% seperti versi yang menjumlahkan skor apa adanya.
+        $this->assertEqualsWithDelta(100.0, $hasil[0]['skor'], 0.01);
     }
 
     public function test_transaksi_tanpa_produk_yang_sama_tidak_dianggap_tetangga(): void
@@ -107,7 +109,7 @@ class RekomendasiServiceTest extends TestCase
 
         $hasil = app(RekomendasiService::class)->rekomendasikanUntukProduk($target->id);
 
-        $this->assertNotContains($asing->id, $hasil->pluck('produk.id'));
+        $this->assertNotContains($asing->id, $hasil->pluck('item.id'));
     }
 
     public function test_skor_knn_dihitung_dari_kemiripan_rating_bukan_angka_acak(): void
@@ -154,11 +156,60 @@ class RekomendasiServiceTest extends TestCase
         $jumlah = app(RekomendasiService::class)->perbaruiSemuaLog();
 
         $this->assertGreaterThan(0, $jumlah);
-        $this->assertDatabaseHas('log_rekomendasi', ['produk_asal_id' => $kampas->id, 'produk_rekomendasi_id' => $oli->id, 'metode' => 'co_purchase']);
+        $this->assertDatabaseHas('log_rekomendasi', [
+            'asal_type' => 'produk', 'asal_id' => $kampas->id,
+            'rekomendasi_type' => 'produk', 'rekomendasi_id' => $oli->id,
+            'metode' => 'co_purchase',
+        ]);
 
         // Skor yang tersimpan harus konsisten dengan yang dikembalikan
         // service, bukan nilai independen yang dikarang ulang.
-        $log = LogRekomendasi::where('produk_asal_id', $kampas->id)->first();
+        $log = LogRekomendasi::where('asal_type', 'produk')->where('asal_id', $kampas->id)->first();
         $this->assertSame(100.0, (float) $log->skor); // cuma 1 produk lain yang pernah dibeli bersama -> 100%
+    }
+
+    public function test_skor_keranjang_tidak_pernah_melebihi_100_persen(): void
+    {
+        [$a, $b, $c, $oli] = Produk::factory()->count(4)->create();
+        // Oli dibeli bersama a, b, dan c sekaligus: dulu skornya dijumlahkan jadi 300%.
+        foreach ([$a, $b, $c] as $asal) {
+            $transaksi = Transaksi::factory()->create();
+            DetailTransaksi::factory()->create(['transaksi_id' => $transaksi->id, 'produk_id' => $asal->id]);
+            DetailTransaksi::factory()->create(['transaksi_id' => $transaksi->id, 'produk_id' => $oli->id]);
+        }
+
+        $hasil = app(RekomendasiService::class)->rekomendasikanUntukKeranjang([$a->id, $b->id, $c->id]);
+
+        $this->assertSame($oli->id, $hasil[0]['item']->id);
+        $this->assertLessThanOrEqual(100, $hasil->max('skor'));
+    }
+
+    public function test_servis_ikut_dihitung_knn_bersama_sparepart(): void
+    {
+        $oli = Produk::factory()->create(['nama' => 'Oli Mesin']);
+        $filter = Produk::factory()->create(['nama' => 'Filter Udara']);
+        $servis = Servis::factory()->create(['nama' => 'Servis Ringan']);
+
+        // Tiga transaksi servis ringan + oli (berating), satu transaksi oli + filter.
+        for ($i = 0; $i < 3; $i++) {
+            $transaksi = Transaksi::factory()->create();
+            DetailTransaksi::factory()->create(['transaksi_id' => $transaksi->id, 'produk_id' => null, 'servis_id' => $servis->id]);
+            DetailTransaksi::factory()->create(['transaksi_id' => $transaksi->id, 'produk_id' => $oli->id]);
+            RatingKomen::factory()->create(['transaksi_id' => $transaksi->id, 'rating' => 5]);
+        }
+        $lain = Transaksi::factory()->create();
+        DetailTransaksi::factory()->create(['transaksi_id' => $lain->id, 'produk_id' => $oli->id]);
+        DetailTransaksi::factory()->create(['transaksi_id' => $lain->id, 'produk_id' => $filter->id]);
+        RatingKomen::factory()->create(['transaksi_id' => $lain->id, 'rating' => 5]);
+
+        $untukServis = app(RekomendasiService::class)->rekomendasikanUntukServis($servis->id);
+        $this->assertSame('knn', $untukServis[0]['metode']);
+        $this->assertContains('p:'.$filter->id, $untukServis->pluck('kunci'));
+
+        // Arah sebaliknya: sparepart bisa merekomendasikan servis (oli selalu
+        // dibeli bersama servis ringan).
+        $untukOli = app(RekomendasiService::class)->rekomendasikanUntukProduk($oli->id);
+        $this->assertContains('s:'.$servis->id, $untukOli->pluck('kunci'));
+        $this->assertSame('servis', $untukOli->firstWhere('kunci', 's:'.$servis->id)['jenis']);
     }
 }

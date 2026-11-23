@@ -75,4 +75,21 @@ class StorefrontTest extends TestCase
 
         $response->assertSessionHas('galat');
     }
+
+    public function test_produk_unggulan_urut_dari_paling_laku_dan_produk_baru_langsung_tampil(): void
+    {
+        $oli = Produk::factory()->create(['nama' => 'Oli Laris']);
+        $busi = Produk::factory()->create(['nama' => 'Busi Sedang']);
+        foreach ([[$oli, 5], [$busi, 2]] as [$p, $n]) {
+            $t = \App\Models\Transaksi::create(['total_harga' => 0]);
+            $t->detailTransaksi()->create(['produk_id' => $p->id, 'jumlah' => $n, 'harga_saat_beli' => $p->harga]);
+        }
+        Produk::factory()->create(['nama' => 'Seher Baru Masuk']);
+
+        $unggulan = $this->get('/')->assertOk()->viewData('unggulan');
+
+        $this->assertSame(['Oli Laris', 'Busi Sedang', 'Seher Baru Masuk'], $unggulan->pluck('nama')->all());
+        $this->assertSame([5, 2, 0], $unggulan->pluck('terjual')->all());
+        $this->get('/')->assertSeeInOrder(['Produk Unggulan', 'Oli Laris', 'Terjual 5', 'Busi Sedang', 'Seher Baru Masuk', 'Baru']);
+    }
 }

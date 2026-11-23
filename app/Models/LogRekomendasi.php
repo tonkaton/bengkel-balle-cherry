@@ -4,16 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * Model LogRekomendasi - "buku catatan" setiap rekomendasi yang pernah
  * dihasilkan RekomendasiService. Berguna buat admin yang penasaran kenapa
- * produk A merekomendasikan produk B, dan sejak kapan.
+ * item A merekomendasikan item B, dan sejak kapan.
  *
- * Setiap baris punya DUA relasi ke tabel produk yang sama (produk asal dan
- * produk yang direkomendasikan), makanya nama kolom foreign key-nya harus
- * ditulis eksplisit - Laravel tidak bisa menebak sendiri mana yang mana.
+ * Item asal maupun item yang direkomendasikan bisa sparepart atau servis,
+ * jadi keduanya disimpan sebagai pasangan jenis + id (relasi polimorfik
+ * "asal" dan "rekomendasi"; jenisnya "produk" atau "servis", lihat
+ * AppServiceProvider).
  */
 class LogRekomendasi extends Model
 {
@@ -22,8 +23,10 @@ class LogRekomendasi extends Model
     protected $table = 'log_rekomendasi';
 
     protected $fillable = [
-        'produk_asal_id',
-        'produk_rekomendasi_id',
+        'asal_type',
+        'asal_id',
+        'rekomendasi_type',
+        'rekomendasi_id',
         'skor',
         'metode',
         'tanggal',
@@ -34,15 +37,13 @@ class LogRekomendasi extends Model
         'tanggal' => 'datetime',
     ];
 
-    /** Produk yang sedang dilihat/dibeli pelanggan (pemicu rekomendasi). */
-    public function produkAsal(): BelongsTo
+    public function asal(): MorphTo
     {
-        return $this->belongsTo(Produk::class, 'produk_asal_id');
+        return $this->morphTo();
     }
 
-    /** Produk yang disarankan sistem sebagai pelengkap produk asal. */
-    public function produkRekomendasi(): BelongsTo
+    public function rekomendasi(): MorphTo
     {
-        return $this->belongsTo(Produk::class, 'produk_rekomendasi_id');
+        return $this->morphTo();
     }
 }

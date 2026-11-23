@@ -21,7 +21,7 @@ class StrukController extends Controller
     /** Tampilkan struk beserta daftar item dan rating (kalau sudah ada). */
     public function show(Transaksi $transaksi): View
     {
-        $transaksi->load(['detailTransaksi.produk', 'ratingKomen']);
+        $transaksi->load(['detailTransaksi.produk', 'detailTransaksi.servis', 'ratingKomen', 'bookingServis']);
 
         return view('storefront.struk', ['transaksi' => $transaksi]);
     }

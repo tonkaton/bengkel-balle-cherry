@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\BookingServis;
 use App\Models\LogRekomendasi;
 use App\Models\Produk;
 use App\Models\RatingKomen;
@@ -29,12 +30,13 @@ class DashboardController extends Controller
         return view('admin.dashboard', [
             'totalProduk' => Produk::count(),
             'totalTransaksi' => Transaksi::count(),
+            'bookingAktif' => BookingServis::whereIn('status', [BookingServis::MENUNGGU, BookingServis::DIKONFIRMASI])->count(),
             'totalPendapatan' => Transaksi::sum('total_harga'),
             'rataRating' => round((float) RatingKomen::avg('rating'), 1),
             'jumlahRating' => RatingKomen::count(),
-            'rekomendasiBulanIni' => LogRekomendasi::whereMonth('tanggal', now()->month)->count(),
+            'rekomendasiBulanIni' => LogRekomendasi::where('tanggal', '>=', now()->startOfMonth())->count(),
             'produkStokMenipis' => Produk::where('stok', '<=', 5)->orderBy('stok')->take(5)->get(),
-            'ratingTerbaru' => RatingKomen::with('transaksi.detailTransaksi.produk')
+            'ratingTerbaru' => RatingKomen::with(['transaksi.detailTransaksi.produk', 'transaksi.detailTransaksi.servis'])
                 ->latest('tanggal')
                 ->take(5)
                 ->get(),

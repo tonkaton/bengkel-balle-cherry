@@ -25,6 +25,9 @@ class AdminPagesTest extends TestCase
             route('admin.rating.index'),
             route('admin.analisis-stok.index'),
             route('admin.rekomendasi.index'),
+            route('admin.servis.index'),
+            route('admin.servis.create'),
+            route('admin.booking.index'),
             route('admin.profile.edit'),
         ];
 
